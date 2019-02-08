@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
-import styled from 'styled-components'
+
 // import Background from '../components/background';
 import FeatureCard from '../components/featureCard';
 import SubCard from '../components/subCard';
-import add from '../images/add (1).svg';
-import firestoreDB from '../components/firestore.js';
 
+import firestoreDB from '../components/firestore.js';
+import AddDialog from '../components/addDialog.js';
 
 export default class Dashboard extends Component {
 
@@ -18,29 +18,24 @@ export default class Dashboard extends Component {
     componentDidMount() {
         firestoreDB.collection("itineraries").get().then((querySnapshot)=>{
             querySnapshot.forEach((doc)=>{
-                console.log(doc.data())
                 if(doc.data().isFeaturedItem){
-                    console.log('in here')
                     this.populateFeaturedItem(doc.id,doc.data());
                 }else{
+                    console.log(doc.id);
                     this.populateItineraries(doc.id,doc.data());
                 }
             });
         });
     }
 
-    componentDidUpdate(_, prevState) {
-        
-            console.log(this.state)
-    }
 
     populateItineraries = (id,data) =>{
         let item = {};
 
-        item.id = id;
-        item = {...data};
-        item.date = data.date.toDate().toString();
-        console.log([...this.state.itineraries,item]);
+        
+        item = {...data,id};
+        console.log(item.id);
+        item.datePosted = data.datePosted.toDate().toString();
         this.setState({itineraries:[...this.state.itineraries,item]});
     }
 
@@ -48,38 +43,40 @@ export default class Dashboard extends Component {
         const newFeaturedItem = {
             ...data,
             id,
-            date: data.date.toDate()
+            datePosted: data.date.toDate()
         }
 
         await this.setState({featureditem:{...newFeaturedItem}});
-        console.log('a ->', this.state.featureditem);
     }
 
     
-    
-    
+    handleFeatureChange = (data) =>{
+        console.log("My Data")
+        console.log(data);
+        this.setState({featureditem:{...data}})
+    }
+
     render(){
         return(
          <div>
           <div className='container'>
             <div className='row'>
               
-            {this.state.featuredItem !== null &&  <FeatureCard item={this.state.featureditem}></FeatureCard>}          
+            {this.state.featureditem !== null &&  <FeatureCard item={this.state.featureditem} ></FeatureCard>}          
                 
             </div>
             <div className='row'>
                 {
                     this.state.itineraries.map((item,i)=>{
                         return(
-                            <div className='col-md-3' key={i}><SubCard item={item} ></SubCard></div>
+                            <div className='col-md-3' key={i}><SubCard onFeatureChange={this.handleFeatureChange} item={item} ></SubCard></div>
                         );
                     })
                 }
             </div>
           </div>
-          <IconBar>
-            <Icon src = {add}></Icon> 
-          </IconBar>
+          
+          <AddDialog></AddDialog>
          </div>
             
         );
@@ -88,23 +85,5 @@ export default class Dashboard extends Component {
     
 }
 
-const IconBar = styled.div`
-    position: fixed;
-    top: 80%;
-    left:90%;
-    -webkit-transform: translateY(-10%);
-    -ms-transform: translateY(-10%);
-    transform: translateY(-10%);
-`
-
-const Icon = styled.img`
-    width:100px;
-    height:100px;
-    display: block;
-    transition: all 0.3s ease;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-`
 
   
