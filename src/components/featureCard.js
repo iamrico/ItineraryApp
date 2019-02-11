@@ -20,6 +20,7 @@ import Divider from '@material-ui/core/Divider';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import FastFoodIcon from '@material-ui/icons/Fastfood';
 import AirplaneIcon from '@material-ui/icons/AirplanemodeActive';
+import ReceiptIcon from '@material-ui/icons/Receipt';
 
 const styles = theme => ({
         card:{
@@ -96,6 +97,7 @@ class FeatureCard extends Component{
     }
 
     async componentDidUpdate(prevState,prevProps){
+        
         console.log("YO");
         console.log(this.props);
 
@@ -116,11 +118,7 @@ class FeatureCard extends Component{
         }
     }
             
-    handleExpandClick = () => {
-        this.setState(state => ({ expanded: !state.expanded }));
-    };
 
-    
 
     render(){
         const {classes} = this.props; 
@@ -162,11 +160,11 @@ class FeatureCard extends Component{
                 <IconButton aria-label="Share">
                     <ShareIcon />
                 </IconButton>
-                <Button size="small" onClick={this.handleExpandClick}>DISCOVER</Button>
+                <Button size="small" onClick={this.props.toggleExpanded}>DISCOVER</Button>
                 
                
               </CardActions>
-              <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+              <Collapse in={this.props.isExpanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <Typography><b>Itinerary:</b></Typography>
                         &nbsp;
@@ -181,11 +179,19 @@ class FeatureCard extends Component{
                                     <ListItem button>
                                         <ListItemIcon>
                                             {
-                                                item.category === "food"? <FastFoodIcon></FastFoodIcon> : ''
+                                                item.category === "Food"? <FastFoodIcon></FastFoodIcon> : ''
                                             }
 
                                             {
-                                                item.category === "transport" ? <AirplaneIcon></AirplaneIcon> : ''
+                                                item.category === "Transport" ? <AirplaneIcon></AirplaneIcon> : ''
+                                            }
+
+                                            {
+                                                item.category === "Item" ? <ReceiptIcon></ReceiptIcon> : ''
+                                            }
+
+                                            {
+                                                item.category === "Misc" ? <AirplaneIcon></AirplaneIcon> : ''
                                             }
                                         </ListItemIcon>
                                         <ListItemText 
@@ -200,7 +206,7 @@ class FeatureCard extends Component{
                                             secondary={
                                                 <React.Fragment>
                                                     <Typography className={classes.comment}>{item.comment}</Typography>
-                                                    <Typography className={classes.text}>${item.cost}</Typography>
+                                                    <Typography className={classes.text}>{`Budget ${item.cost}`}</Typography>
                                                 </React.Fragment>
                                             }/>
                                     </ListItem>

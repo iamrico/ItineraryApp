@@ -11,7 +11,8 @@ export default class Dashboard extends Component {
 
     state = {
         featureditem: null,
-        itineraries:[]
+        itineraries:[],
+        isExpanded:true
     }
 
 
@@ -56,20 +57,29 @@ export default class Dashboard extends Component {
         this.setState({featureditem:{...data}})
     }
 
+    handleExpandedChange = async (data)=>{
+
+        await this.setState({isExpanded:false})
+        console.log(this.state)
+    }
+    
     render(){
         return(
          <div>
           <div className='container'>
             <div className='row'>
               
-            {this.state.featureditem !== null &&  <FeatureCard item={this.state.featureditem} ></FeatureCard>}          
+            {this.state.featureditem !== null &&  <FeatureCard 
+                item={this.state.featureditem} 
+                isExpanded={this.state.isExpanded} 
+                toggleExpanded={() => this.setState(prevState => ({isExpanded: !prevState.isExpanded}))}></FeatureCard>}          
                 
             </div>
             <div className='row'>
                 {
                     this.state.itineraries.map((item,i)=>{
                         return(
-                            <div className='col-md-3' key={i}><SubCard onFeatureChange={this.handleFeatureChange} item={item} ></SubCard></div>
+                            <div className='col-md-3' key={i}><SubCard onFeatureChange={this.handleFeatureChange} isExpanded= {this.state.isExpanded} onExpandedChange={this.handleExpandedChange} item={item} ></SubCard></div>
                         );
                     })
                 }

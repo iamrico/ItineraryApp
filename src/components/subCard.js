@@ -8,14 +8,16 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 import hk from '../images/hk.png';
-import classnames from 'classnames'
+import classnames from 'classnames';
+import Divider from '@material-ui/core/Divider';
+
 const styles = {
     card:{
         minWidth:275,
         margin:'0 auto',
-        marginTop:'5%',
+        marginTop:'15%',
         // width: '70%',
-        marginBottom:'0%'
+        marginBottom:'5%',
     },
     bullet: {
         display:'inline-block',
@@ -27,6 +29,10 @@ const styles = {
     },
     pos:{
         marginBottom:12,
+        
+    },
+    location:{
+      fontSize:'15px'
     },
     media: {
         height:0,
@@ -55,6 +61,7 @@ class SubCard extends Component{
 
     handleClick = (data) => {
         this.props.onFeatureChange({...this.props.item});
+        this.props.onExpandedChange(true);
     }
 
     render(){
@@ -75,7 +82,7 @@ class SubCard extends Component{
             <Typography variant="h5" component="h2">
               {this.props.item.title}
             </Typography>
-            <Typography className={classes.pos} variant='h6' component='h6' color="textSecondary">
+            <Typography className={classes.location}  component='h6' color="textSecondary">
               <i>{this.props.item.location}</i>
             </Typography>
             <Typography className={classes.pos} color="textSecondary">
@@ -94,6 +101,7 @@ class SubCard extends Component{
             </h6>
             
           </CardContent>
+          <Divider/>
           <CardActions>
             <Button size="large" onClick={this.handleClick}>DISCOVER</Button>
           </CardActions>

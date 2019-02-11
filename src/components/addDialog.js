@@ -281,7 +281,6 @@ class MyDialog extends React.Component {
                     }
                    <ListItem>
                         <input type="file" class="file-select" accept="image/*" onChange={this.handleFileUploadChange} />
-                        <Button  onClick={this.handleFileUploadSubmit}>SUBMIT</Button>
                     
                    </ListItem>
                    <ListItem>
