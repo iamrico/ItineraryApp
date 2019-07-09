@@ -1,13 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "My Extension",
-  "icons": [
-    {
-      "src": "plane-emoji-png-2.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
-  ],
+  "short_name": "Lakbay",
+  "name": "Lakbay",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
@@ -16,6 +9,14 @@
     "manifest_version": 2,
     "browser_action": {
         "default_popup": "index.html"
+    },
+    "chrome_url_overrides": {
+      "newtab": "index.html"
+    },
+    "icons": {
+      "16": "plane-emoji-png-2.png",
+      "48": "plane-emoji-png-2.png",
+      "128": "plane-emoji-png-2.png"
     },
     "content_security_policy": "script-src 'self' 'sha256-GgRxrVOKNdB4LrRsVPDSbzvfdV4UqglmviH9GoBJ5jk='; object-src 'self'"
 }

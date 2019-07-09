@@ -81,7 +81,6 @@ class FeatureCard extends Component{
     }
 
     async componentDidMount() {
-        console.log("Mounted")
         const itineraryRef = await firestoreDB.collection('itineraries').doc(this.props.item.id)
 
         itineraryRef.collection("actions").get().then(querySnapshot => {
@@ -98,11 +97,9 @@ class FeatureCard extends Component{
 
     async componentDidUpdate(prevState,prevProps){
         
-        console.log("YO");
-        console.log(this.props);
 
         if(prevState.item.id !== this.props.item.id){
-            console.log(this.props.item.id)
+            
             const itineraryRef = await firestoreDB.collection('itineraries').doc(this.props.item.id)
 
             itineraryRef.collection("actions").get().then(querySnapshot => {
@@ -118,7 +115,12 @@ class FeatureCard extends Component{
         }
     }
             
-
+    share = () =>{
+        window.FB.ui({
+            method: 'share',
+            href: 'https://chrome.google.com/webstore/detail/itinerary-app/oodegipcbffkkpihbjaagjbapfedeofn',
+          }, function(response){});
+    }
 
     render(){
         const {classes} = this.props; 
@@ -153,13 +155,15 @@ class FeatureCard extends Component{
                 </Typography>
                 <Typography>
                     &nbsp;
-                    <h4><b>{`$ ${this.props.item && this.props.item.totalCost}`}</b></h4>
+                    <h4><b>{`Budget: $ ${this.props.item && this.props.item.totalCost}`}</b></h4>
                 </Typography>
               </CardContent>
               <CardActions className={classes.actions} >
-                <IconButton aria-label="Share">
-                    <ShareIcon />
-                </IconButton>
+                {/* <IconButton aria-label="Share">
+                    <ShareIcon onClick={this.share}/>
+                </IconButton> */}
+            
+               
                 <Button size="small" onClick={this.props.toggleExpanded}>DISCOVER</Button>
                 
                
@@ -206,7 +210,7 @@ class FeatureCard extends Component{
                                             secondary={
                                                 <React.Fragment>
                                                     <Typography className={classes.comment}>{item.comment}</Typography>
-                                                    <Typography className={classes.text}>{`Budget ${item.cost}`}</Typography>
+                                                    <Typography className={classes.text}>{`$ ${item.cost}`}</Typography>
                                                 </React.Fragment>
                                             }/>
                                     </ListItem>

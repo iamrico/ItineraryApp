@@ -64,6 +64,9 @@ class SubCard extends Component{
         this.props.onExpandedChange(true);
     }
 
+    componentDidMount(){
+      window.twttr.widgets.load()
+    }
     render(){
       const {classes} = this.props; 
       return (
@@ -104,6 +107,14 @@ class SubCard extends Component{
           <Divider/>
           <CardActions>
             <Button size="large" onClick={this.handleClick}>DISCOVER</Button>
+            <a 
+                    href="https://twitter.com/share?ref_src=twsrc%5Etfw" 
+                    className="twitter-share-button" 
+                    data-size="large" 
+                    data-text={`Look! Did you know you can go to ${this.props.item.location} and spend only under $${this.props.item.totalCost} in a day? Check out this itinerary!`}
+                    data-url="https://chrome.google.com/webstore/detail/itinerary-app/oodegipcbffkkpihbjaagjbapfedeofn" 
+                    data-hashtags="testing" 
+                    data-show-count="false">Tweet</a>
           </CardActions>
         </Card>
       );

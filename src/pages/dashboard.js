@@ -6,8 +6,18 @@ import SubCard from '../components/subCard';
 
 import firestoreDB from '../components/firestore.js';
 import AddDialog from '../components/addDialog.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
-export default class Dashboard extends Component {
+const styles = theme => ({
+    progress: {
+      margin: theme.spacing.unit * 2,
+    },
+  });
+
+
+ class Dashboard extends Component {
 
     state = {
         featureditem: null,
@@ -17,6 +27,7 @@ export default class Dashboard extends Component {
 
 
     componentDidMount() {
+        
         firestoreDB.collection("itineraries").get().then((querySnapshot)=>{
             querySnapshot.forEach((doc)=>{
                 if(doc.data().isFeaturedItem){
@@ -35,7 +46,7 @@ export default class Dashboard extends Component {
 
         
         item = {...data,id};
-        console.log(item.id);
+       
         item.datePosted = data.datePosted.toDate().toString();
         this.setState({itineraries:[...this.state.itineraries,item]});
     }
@@ -52,18 +63,21 @@ export default class Dashboard extends Component {
 
     
     handleFeatureChange = (data) =>{
-        console.log("My Data")
-        console.log(data);
         this.setState({featureditem:{...data}})
     }
 
     handleExpandedChange = async (data)=>{
 
         await this.setState({isExpanded:false})
-        console.log(this.state)
     }
     
     render(){
+        const { classes } = this.props;
+
+        if(!this.state.featureditem){
+            return <CircularProgress className={classes.progress} />
+        }
+
         return(
          <div>
           <div className='container'>
@@ -85,15 +99,18 @@ export default class Dashboard extends Component {
                 }
             </div>
           </div>
-          
           <AddDialog></AddDialog>
          </div>
             
         );
     }
 
+   
     
 }
 
-
+Dashboard.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
   
+export default withStyles(styles)(Dashboard);

@@ -18,6 +18,39 @@ import MenuItem from '@material-ui/core/MenuItem';
 import firestoreDB from '../components/firestore.js';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import firestoreStorage from '../components/storage.js';
+import { makeStyles } from '@material-ui/core/styles';
+import { amber, green } from '@material-ui/core/colors';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import clsx from 'clsx';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CloseIcon from '@material-ui/icons/Close';
+import Snackbar from '@material-ui/core/Snackbar';
+
+// const useStyles1 = makeStyles(theme => ({
+//   success: {
+//     backgroundColor: green[600],
+//   },
+//   error: {
+//     backgroundColor: theme.palette.error.dark,
+//   },
+//   info: {
+//     backgroundColor: theme.palette.primary.main,
+//   },
+//   warning: {
+//     backgroundColor: amber[700],
+//   },
+//   icon: {
+//     fontSize: 20,
+//   },
+//   iconVariant: {
+//     opacity: 0.9,
+//     marginRight: theme.spacing(1),
+//   },
+//   message: {
+//     display: 'flex',
+//     alignItems: 'center',
+//   },
+// }));
 
 const styles = theme => (
     {
@@ -74,15 +107,15 @@ class MyDialog extends React.Component {
       actionInput:[{name:'',cost:'',category:'',comment:''}],
       description:"",
       totalCost:0,
-      image:''
+      image:'',
+      open:false
   }
-
+  
+  
   handleClose = (event) => {
 
-    if(event === 'Cancel'){
         this.props.onClose();
-    }
-    
+ 
   };
 
   handleListItemClick = value => {
@@ -105,16 +138,18 @@ class MyDialog extends React.Component {
       this.setState({actionInput:[...this.state.actionInput,{name:'Action'+(this.state.actionInput.length+1)}]})
   }
 
+  handleSBClose = ()=> {
+    this.setState({open:false});
+  }
+
   onSubmit = async () =>{
 
+
+      this.handleClose();
 
       let image;
 
       image =  await this.handleFileUploadSubmit();
-
-      console.log("THIS IS AN IMAGE"+image);
-
-        console.log(this.state);
         let newDocument = {
             title:this.state.title,
             description:this.state.description,
@@ -133,19 +168,24 @@ class MyDialog extends React.Component {
   
         let length = this.state.actionInput.length;
         let actionData = [...this.state.actionInput];
-        console.log(actionData);
-        firestoreDB.collection("itineraries").add({...newDocument}).then(async function(docRef) {
+        
+        const variable = await firestoreDB.collection("itineraries").add({...newDocument}).then(async function(docRef) {
           console.log("Document written with ID: ", docRef.id);
           const itineraryRef = await firestoreDB.collection('itineraries').doc(docRef.id);
   
           for(let i=0;i<length;i++){
               itineraryRef.collection("actions").add({...actionData[i]})
           }
-          
+          return 1;
         }).catch(function(error) {
               console.error("Error adding document: ", error);
         });
       
+        if(variable){
+          this.handleClose();
+          this.openSnackBar();
+        }
+        
   }
 
   selectedFile;
@@ -155,22 +195,36 @@ class MyDialog extends React.Component {
   }
 
   handleFileUploadSubmit =  async (e) =>{
-       console.log("WTF");
 
     const uploadTask =  await storageRef.child(`images/${this.selectedFile.name}`).put(this.selectedFile); //create a child directory called images, and place the file inside this directory
-    
-    console.log(uploadTask);
-
-    
    
     return storageRef.child(`images/${this.selectedFile.name}`).getDownloadURL();
   }
 
+  openSnackBar = () =>{
+    this.setState({open:true});
+  }
   render() {
     const { classes, onClose, selectedValue, ...other } = this.props;
 
     return (
-      <Dialog fullWidth={true}  className={classes.card} onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+      <div>
+        <Snackbar
+        onClose={this.handleSBClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={this.state.open}
+        autoHideDuration={6000}
+      >
+        <MySnackbarContentWrapper
+          onClose={this.handleSBClose}
+          variant="success"
+          message="This is a success message!"
+        />
+        </Snackbar>
+        <Dialog fullWidth={true}  className={classes.card} onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
         <DialogTitle id="simple-dialog-title">Add a new Itinerary</DialogTitle>
         <Divider/>
         <DialogContent>
@@ -215,7 +269,7 @@ class MyDialog extends React.Component {
                         this.state.actionInput.map((item,i)=>{
                             
                             return(
-                                <div>
+                                <div key={i}>
                                     <ListItem>
                                         <TextField 
                                             id="standard-name"
@@ -296,6 +350,8 @@ class MyDialog extends React.Component {
             </DialogContentText>
         </DialogContent>
       </Dialog>
+      </div>
+      
     );
   }
 
@@ -310,16 +366,40 @@ MyDialog.propTypes = {
 
 const AddDialogWrapped = withStyles(styles)(MyDialog);
 
+const variantIcon = {
+  success: CheckCircleIcon,
+
+};
+
+function MySnackbarContentWrapper(props) {
   
+  const { className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+
+  return (
+    <SnackbarContent
+      styles={{"backgroundColor": "green"}}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" style={{"display": 'flex',"alignItems": 'center',}}>
+          <Icon style={{"fontSize": "20", "opacity": "0.9","marginRight":"20"}} />
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton key="close" aria-label="Close" color="inherit" onClick={onClose}>
+          <CloseIcon style={{"fontSize": "20",}} />
+        </IconButton>,
+      ]}
+      {...other}
+    />
+  );
+}
 
 class AddDialog extends React.Component {
   state = {
     open: false,
   };
-
-  
-
-  
 
   handleClickOpen = () => {
     this.setState({
